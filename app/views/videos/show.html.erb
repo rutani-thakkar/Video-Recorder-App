@@ -1,0 +1,21 @@
+<!-- show.html.erb -->
+<h1><%= @video.title %></h1>
+<video width="320" height="240" controls>
+  <source src="<%= @video.file.url %>" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<% if @video.transcript.present? %>
+  <h2>Transcript</h2>
+  <p><%= @video.transcript %></p>
+<% else %>
+  <p>Transcription in progress...</p>
+<% end %>
+<% if @video.user == current_user %>
+  <% if @video.published? %>
+    <%= button_to 'Unpublish', unpublish_video_path(@video), method: :patch, class: 'btn btn-warning' %>
+  <% else %>
+    <%= button_to 'Publish', publish_video_path(@video), method: :patch, class: 'btn btn-success' %>
+  <% end %>
+<% end %>
+
+<%= link_to 'Back', videos_path %>

@@ -1,0 +1,58 @@
+<%= form_with(model: @video, local: true) do |form| %>
+  <p>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+  </p>
+
+  <p>
+    <%= form.label :transcript %><br>
+    <%= form.text_area :transcript %>
+  </p>
+
+  <p>
+    <%= form.label :file %><br>
+    <%= form.file_field :file, id: 'file' %>
+  </p>
+
+  <p>
+    <video id="video" width="320" height="240" autoplay></video>
+    <button type="button" id="start-record">Start Recording</button>
+    <button type="button" id="stop-record" disabled>Stop Recording</button>
+  </p>
+
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
+
+<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+<script>
+  const video = document.getElementById('video');
+  const startRecordButton = document.getElementById('start-record');
+  const stopRecordButton = document.getElementById('stop-record');
+  let recorder;
+
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(function(stream) {
+      video.srcObject = stream;
+
+      startRecordButton.onclick = function() {
+        recorder = RecordRTC(stream, { type: 'video' });
+        recorder.startRecording();
+        startRecordButton.disabled = true;
+        stopRecordButton.disabled = false;
+      };
+
+      stopRecordButton.onclick = function() {
+        recorder.stopRecording(function() {
+          let blob = recorder.getBlob();
+          let file = new File([blob], `${Date.now()}-video.webm`, { type: 'video/webm' });
+          let dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          document.getElementById('file').files = dataTransfer.files;
+          startRecordButton.disabled = false;
+          stopRecordButton.disabled = true;
+        });
+      };
+    });
+</script>

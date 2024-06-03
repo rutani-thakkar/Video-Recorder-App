@@ -1,0 +1,28 @@
+<h1>Videos</h1>
+
+<table border='1'>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Transcript</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @videos.each do |video| %>
+      <tr>
+        <td><%= video.title %></td>
+        <td><%= truncate(video.transcript, length: 20) %></td>
+        <td>
+          <%= link_to 'Show', video_path(video) %>
+          <%= link_to 'Edit', edit_video_path(video) if user_can_edit(video) %>
+          <%= button_to 'Delete', video_path(video), method: :delete, data: { confirm: 'Are you sure?' }  if user_can_edit(video) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'New Video', new_video_path %>
+<%= link_to 'Home', home_index_path %>
+
